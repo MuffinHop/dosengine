@@ -9,7 +9,7 @@ void loader() {
     loadingimage.pixelbuffer = malloc(320 * 200);
     loadingimage.palettebuffer = malloc(256 * 3);
 
-    PIX_LoadGIF("image.gif", loadingimage.pixelbuffer, loadingimage.palettebuffer , &width, &height);
+    PIX_LoadGIF("img\\loading.gif", loadingimage.pixelbuffer, loadingimage.palettebuffer , &width, &height);
     
     loadingimage.width = width;
     loadingimage.height = height;
@@ -37,7 +37,7 @@ void loader() {
     /*LOADING STARTS FROM HERE*/
     /*LOADING STARTS FROM HERE*/
 
-    background = loadImage("backgrou.gif");
+    background = loadImage("img\\backgrou.gif");
 
     if ( (module = MIDASloadModule(moduleName)) == NULL )
         MIDASerror();

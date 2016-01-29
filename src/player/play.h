@@ -1,0 +1,2 @@
+void initPlayer();
+void endPlayer();

@@ -9,16 +9,6 @@ void MIDASerror() {
 #endif
     exit(EXIT_FAILURE);
 }
-void waitFrame() {
-    unsigned    old;
-#ifdef NOMUSIC
-    vgaWaitNoVR();
-    vgaWaitVR();
-#else
-    old = frameCount;
-    while ( old == frameCount );
-#endif
-}
 void MIDAS_CALL SyncCallback(unsigned syncNum, unsigned position, unsigned row) {
     /* Prevent warnings: */
     position = position;

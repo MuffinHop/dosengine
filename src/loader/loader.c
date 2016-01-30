@@ -15,7 +15,7 @@ void loader() {
     loadingimage.height = height;
     midasMagicStart();
 
-    set_mode(VGA_256_COLOR_MODE);       /* set the video mode. */
+    set_mode(VGA_256_COLOR_MODE);
 
     for(i=0; i<256; i++) {
         outp(0x03c8, (byte)i);
@@ -28,8 +28,8 @@ void loader() {
             videobuffer[0][i+f*320] = loadingimage.pixelbuffer[min(i,width)+f*width];
         }
     }
-    wait_for_retrace();
 
+    wait_for_retrace();
 
     /*LOADING STARTS FROM HERE*/
     /*LOADING STARTS FROM HERE*/
@@ -41,9 +41,7 @@ void loader() {
 
     if ( (module = MIDASloadModule(moduleName)) == NULL )
         MIDASerror();
-
-
-                                                                                                            
+                                                                                           
 
     /*LOADING ENDS HERE*/
     /*LOADING ENDS HERE*/
@@ -55,7 +53,6 @@ void loader() {
 
 
     /*Fade out from loading screen*/
-    wait(13);
     set_mode(VGA_256_COLOR_MODE);  
 
     for(f=0;f<256;f++){

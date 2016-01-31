@@ -17,7 +17,7 @@ void push_videobuffer() {
     } else {
         int i;
         dword *dwordVGA=(dword *)0xA0000; 
-        dword *dwordBuffer=(dword *)&videobuffer[0];
+        dword *dwordBuffer=(dword *)&videobuffer;
         for(i = 0; i < 16000; i++) {
             dwordVGA[i] = dwordBuffer[i];
         }

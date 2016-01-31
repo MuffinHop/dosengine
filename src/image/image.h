@@ -4,6 +4,6 @@ struct Image {
     unsigned int width;
     unsigned int height;
 };
-void displayImage(struct Image img, unsigned int bufindx);
+void displayImage(struct Image img);
 struct Image loadImage(const char* file);
 struct Image background;

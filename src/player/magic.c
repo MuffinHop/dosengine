@@ -81,7 +81,10 @@ void midasMagicStart() {
 }
 
 void midasMagicDies() {
-#ifndef NOMUSIC
+    int i;
+    for(i=63; i>-1; i--){
+        MIDASsetMusicVolume(playHandle, i);
+    }
     if ( !MIDASsetMusicSyncCallback(playHandle, NULL) )
         MIDASerror();
     if ( !MIDASstopModule(playHandle) )
@@ -92,5 +95,4 @@ void midasMagicDies() {
         MIDASerror();
     if ( !MIDASclose() )
         MIDASerror();
-#endif
 }

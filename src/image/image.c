@@ -1,5 +1,5 @@
 #include "src\misc\definer.h"
-void displayImage(struct Image img, unsigned int bufindx) {
+void displayImage(struct Image img) {
 	int i,j;
     int width = img.width;
     for(i=0;i<256;i++) {
@@ -10,10 +10,9 @@ void displayImage(struct Image img, unsigned int bufindx) {
     }
     for(j=0; j<200; j++) {
         for(i=0; i<320; i++) {
-            videobuffer[bufindx][i+j*320] = img.pixelbuffer[min(i,width)+j*width];
+            videobuffer[i+j*320] = img.pixelbuffer[min(i,width)+j*width];
         }
     }
-    wait_for_retrace();
 }
 struct Image loadImage(const char* file) {
     int width = 320;

@@ -3,7 +3,7 @@
 /*Wait for vertical blank 60hz, flips address*/
 void wait_for_retrace() {
     /* wait until done with vertical retrace */
-    while (   (inp(INPUT_STATUS) & VRETRACE)  ) {};
+    while (   (inp(INPUT_STATUS) & VRETRACE)  ) {}
     push_videobuffer();
     /* wait until done refreshing */
     while (   !(inp(INPUT_STATUS) & VRETRACE) ) {};

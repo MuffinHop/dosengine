@@ -25,7 +25,7 @@ void loader() {
     }
     for(f=0; f<200; f++) {
         for(i=0; i<320; i++) {
-            videobuffer[0][i+f*320] = loadingimage.pixelbuffer[min(i,width)+f*width];
+            videobuffer[i+f*320] = loadingimage.pixelbuffer[min(i,width)+f*width];
         }
     }
 
@@ -55,7 +55,7 @@ void loader() {
     /*Fade out from loading screen*/
     set_mode(VGA_256_COLOR_MODE);  
 
-    for(f=0;f<256;f++){
+    for(f=0;f<256;f+=4){
         for(i=0;i<256;i++){
             outp(0x03c8, (byte)i);
             outp(0x03c9, max(loadingimage.palettebuffer[i * 3 + 0]-f,0));
@@ -65,7 +65,7 @@ void loader() {
         wait_for_retrace();
     }
     for(i=0; i<320*200; i++) {
-        videobuffer[0][i] = 0;
+        videobuffer[i] = 0;
     }
     wait_for_retrace();
 }

@@ -12,21 +12,6 @@ void MIDAS_CALL UpdateInfo(void) {
     row = status.row;
     syncInfo = status.syncInfo;
 }
-void demo() {
-    int i = 0;
-    float x, y;
-    for( y = 0; y < 200; y++) {
-        for( x = 0; x < 320; x++) {
-            float cf = (x + y)/(320.0f*200.0f);
-            int ci;
-            cf *= 5120.0f;
-            ci = (int)cf;
-            i++;
-            videobuffer[0][i] = ci;
-        }
-    }
-    wait_for_retrace();
-}
 int main(int argc, char *argv[]) {
     union REGS regs;
     int i,j,f,k=0;
@@ -58,7 +43,6 @@ int main(int argc, char *argv[]) {
     if ( (playHandle = MIDASplayModule(module, TRUE)) == 0 ) {
         MIDASerror();
     }
-
 
             
     while ( !kbhit() ) {

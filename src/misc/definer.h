@@ -104,6 +104,12 @@ byte* extremeBuffer[320*66*3];
 MIDASmodule module;
 MIDASmodulePlayHandle playHandle;
 
+/* 
+    Keep array small, 
+    because easily uses a lot of memory. 
+    For example 320x200x16 > 2Mb. Regular pentiums had 8-16Mb.*/
+struct Image images[16]; 
+
 void vgaWaitVR(void);
 #pragma aux vgaWaitVR = \
     "mov    dx,03DAh" \

@@ -3,8 +3,8 @@
 void drawHorizontalLine( int x0, int x1, int y, byte color) {
 	long pointer8, pointer32, length8, color32;
     dword *videobuffer32;
-    x0=min(max(x0,0),320);
-    x1=min(max(x1,0),320);
+    if(y<0) return;
+    if(y>200) return;
 	if( x0 > x1 ) { //if bigger xor-swap
 		x0 ^= x1;
 		x1 ^= x0;
@@ -17,12 +17,17 @@ void drawHorizontalLine( int x0, int x1, int y, byte color) {
 	color32 = color;
 	color32 = color32 + (color32 << 8) + (color32 << 16) + (color32 << 24);
 	for ( ;length8 > 4;length8-=4) {
-		videobuffer32[ pointer32 ] = color32;
+		if( x0 > 320 - 6 ) {length8+=4;break;}
+		if (x0 > 0  )
+			videobuffer32[ pointer32 ] = color32;
 		pointer32++;
 		pointer8 += 4;
+		x0+=4;
 	}
 	for ( ;length8 > 0;length8--) {
-		videobuffer[ pointer8 ] = color;
+		if(x0 > 0 && x0 < 318)
+			videobuffer[ pointer8 ] = color;
 		pointer8++;
+		x0++;
 	}
 }

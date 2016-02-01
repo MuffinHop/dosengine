@@ -86,6 +86,12 @@ word            temp;
 
 byte* extremeBuffer[320*66*3];
 
+
+float currentTime;
+float prevTime;
+float startTime;
+float passedTime;
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <dos.h>
@@ -101,71 +107,51 @@ byte* extremeBuffer[320*66*3];
 #include "src\video\video.h"
 #include "src\loader\loader.h"
 #include "src\3d\horzline.h"
+#include "src\3d\raster.h"
+#include "src\3d\vector.h"
 
 #define FIXED_TO_FLOAT(x) ((float)x / 65536);
-#define FLOAT_TO_FIXED(f) (long)(f*65536);
+#define FLOAT_TO_FIXED(f) (long)(f * 65536);
+#define INT_TO_FIXED(x) (long)(x * 65536)
+#define FIXED_TO_INT(x) (int) ( (long)(x / 65536) & 0x0000ffff)
 
-float SIN1024[1024];
-float COS1024[1024];
+/*  long long -> turns into 64-bit
+    Any 32-bit CPU or even MMX will go ape shit over this
+    and lose any speed gain from fixed*/
+//#define FIXEDMUL(x, y) ((long long)(x)*(long long)(y)) / 65536
+
+/*  Not super accurate but good enough*/
+#define FIXEDMUL(x, y) ((x/256)*(y/256))
+
+#define FIXEDDIV(x, y) (((long long)(x)<<16)/y)
+//#define FIXEDDIV(x, y) ((x*256)/(y*256))
+long FIXCEIL( long a) {
+    long decimal, integer;
+    decimal = a & 0x0000ffff;
+    if(decimal != 0) {
+        integer = a & 0xffff0000;
+        integer += 0xffff0000;
+        return integer;
+    }
+    return a;
+}
+long SIN1024[1024];
+long COS1024[1024];
 void calcSIN() {
     float i=0.0f;
     for(i=0.0f; i<1024.0f; i++) {
         float sini = sin(3.14151591f * 2.0f * i/1024.0f);
-        SIN1024[(int)i] = sini;
+        SIN1024[(int)i] = FLOAT_TO_FIXED(sini);
     }
 }
 void calcCOS() {
     float i=0.0f;
     for(i=0.0f; i<1024.0f; i++) {
         float cosi = cos(3.14151591f * 2.0f * i/1024.0f);
-        COS1024[(int)i] = cosi;
+        COS1024[(int)i] = FLOAT_TO_FIXED(cosi);
     }
 }
 
-struct Vec {
-   long x, y, z;
-}; 
-struct Vec VecCreateF( float x_, float y_, float z_) {
-    struct Vec r_;
-    r_.x = FLOAT_TO_FIXED(x_);
-    r_.y = FLOAT_TO_FIXED(y_);
-    r_.z = FLOAT_TO_FIXED(z_);
-    return r_;
-};
-struct Vec VecCreateL( long x_, long y_, long z_) {
-    struct Vec r_;
-    r_.x = x_;
-    r_.y = y_;
-    r_.z = z_;
-    return r_;
-};
-struct Vec add( struct Vec A, struct Vec B) {
-    return VecCreateL(A.x+B.x,A.y+B.y,A.z+B.z);
-}
-struct Vec sub( struct Vec A, struct Vec B) {
-    return VecCreateL(A.x-B.x,A.y-B.y,A.z-B.z);
-}
-struct Vec mul( struct Vec A, struct Vec B) {
-    return VecCreateL(A.x*B.x,A.y*B.y,A.z*B.z);
-}
-struct Vec norm( struct Vec A) {
-    float L = sqrt( A.x*A.x + A.y*A.y + A.z * A.z);
-    return VecCreateL(A.x/L,A.y/L,A.z/L);
-}
-float dot( struct Vec A, struct Vec B) {
-    return A.x*B.x+A.y*B.y+A.z*B.z;
-}
-struct Vec cross( struct Vec A, struct Vec B) {
-    return VecCreateL(A.y*B.z-A.z*B.y,A.z*B.x-A.x*B.z,A.x*B.y-A.y*B.x);
-}
-struct Vec rot2D( struct Vec A, float rad ) {
-    long X, Y;
-    float sina = SIN1024[(int)(rad*1024.0f)&1023];
-    float cosa = COS1024[(int)(rad*1024.0f)&1023];
-    X = A.x * cosa - A.y * sina;
-    Y = A.x * sina + A.y * cosa;
-    return VecCreateL(X, Y, A.z);
-}
 
 
 

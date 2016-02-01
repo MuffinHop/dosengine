@@ -62,7 +62,7 @@ void midasMagicStart() {
         printf("RUN IN DOS\n");
         if ( getch() == 27 )
             return;
-        refreshRate = 70000; /* default 70Hz */
+        refreshRate = 60000; /* default 60Hz */
     }
 
     if ( !MIDASinit() )

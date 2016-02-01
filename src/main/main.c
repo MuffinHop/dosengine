@@ -35,7 +35,7 @@ void filling(float x1, float y1, float x2, float y2, float x3, float y3) {
     curx2 = x1;
     scanlineY = y1;
     if(y1 != y2)
-    for ( scanlineY = y1; scanlineY < y2; scanlineY++) {
+    for ( scanlineY = y1+1; scanlineY < y2; scanlineY++) {
         int x0 = curx1;
         int x1 = curx2;
         drawHorizontalLine( x0, x1, scanlineY, 33);
@@ -57,12 +57,13 @@ void filling(float x1, float y1, float x2, float y2, float x3, float y3) {
         curx2 += invslope2;
     }
 }
-void swap( int *a, int *b) {
+void swap( long *a, long *b) {
     *a ^= *b;
     *b ^= *a;
     *a ^= *b;
 }
-void polygonFill(int x0, int y0, int x1, int y1, int x2, int y2) {
+void polygonFill(long x0, long y0, long x1, long y1, long x2, long y2) {
+    float fx0, fy0, fx1, fy1, fx2, fy2;
     if(y0>y1) {
         swap( &x0, &x1);
         swap( &y0, &y1);
@@ -75,9 +76,16 @@ void polygonFill(int x0, int y0, int x1, int y1, int x2, int y2) {
         swap( &x1, &x2);
         swap( &y1, &y2);
     }
-    filling(x0, y0, x1, y1, x2, y2);
+    fx0 = FIXED_TO_FLOAT(x0);
+    fy0 = FIXED_TO_FLOAT(y0);
+    fx1 = FIXED_TO_FLOAT(x1);
+    fy1 = FIXED_TO_FLOAT(y1);
+    fx2 = FIXED_TO_FLOAT(x2);
+    fy2 = FIXED_TO_FLOAT(y2);
+    filling(fx0, fy0, fx1, fy1, fx2, fy2);
 }
-void polygon(int x0, int y0, int x1, int y1, int x2, int y2) {
+void polygon(long x0, long y0, long x1, long y1, long x2, long y2) {
+    float fx0, fy0, fx1, fy1, fx2, fy2;
     if(y0>y2) {
         swap( &x0, &x2);
         swap( &y0, &y2);
@@ -90,9 +98,15 @@ void polygon(int x0, int y0, int x1, int y1, int x2, int y2) {
         swap( &x0, &x1);
         swap( &y0, &y1);
     }
-    line(x0, y0, x1, y1);
-    line(x0, y0, x2, y2);
-    line(x1, y1, x2, y2);
+    fx0 = FIXED_TO_FLOAT(x0);
+    fy0 = FIXED_TO_FLOAT(y0);
+    fx1 = FIXED_TO_FLOAT(x1);
+    fy1 = FIXED_TO_FLOAT(y1);
+    fx2 = FIXED_TO_FLOAT(x2);
+    fy2 = FIXED_TO_FLOAT(y2);
+    line(fx0, fy0, fx1, fy1);
+    line(fx0, fy0, fx2, fy2);
+    line(fx1, fy1, fx2, fy2);
 }
 struct Vec transform(struct Vec A) {
     struct Vec B;
@@ -105,29 +119,18 @@ void demo() {
     word e;
     float i;
     word T = *my_clock;
+    struct Vec z =  VecCreateF( 160.0f, 100.0f, 0.0f);
     pyor = (float)(T)/100.0f;
-    for(i=0.0; i<12.0f; i++){
-        struct Vec a;
-        struct Vec b;
-        struct Vec c;
-        a.x = 64.0f+i;
-        a.y =-32.0f;
-        a.z = 0.0f;
-        b.x =-64.0f+i;
-        b.y = -64.0f;
-        b.z = 0.0f;
-        c.x = i;
-        c.y = 64.0f;
-        c.z = 0.0f;
+    for(i=0.0; i<3.0f; i++){
+        struct Vec a = VecCreateF( 64.0f,-32.0f, 0.0f);
+        struct Vec b = VecCreateF(-64.0f,-64.0f, 0.0f);
+        struct Vec c = VecCreateF( i, 64.0f, 0.0f);
         a = rot2D( a, pyor+i/11.0f );
         b = rot2D( b, pyor+i/11.0f );
         c = rot2D( c, pyor+i/11.0f );
-        a.x += 160.0f;
-        a.y += 100.0f;
-        b.x += 160.0f;
-        b.y += 100.0f;
-        c.x += 160.0f;
-        c.y += 100.0f;
+        a = add( a, z);
+        b = add( b, z);
+        c = add( c, z);
         polygonFill(a.x, a.y, b.x, b.y, c.x, c.y);
         polygon(a.x, a.y, b.x, b.y, c.x, c.y);
     }

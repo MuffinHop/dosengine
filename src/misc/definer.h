@@ -102,26 +102,37 @@ byte* extremeBuffer[320*66*3];
 #include "src\loader\loader.h"
 #include "src\3d\horzline.h"
 
+#define FIXED_TO_FLOAT(x) ((float)x / 65536);
+#define FLOAT_TO_FIXED(f) (long)(f*65536);
 
 float SIN1024[1024];
 float COS1024[1024];
 void calcSIN() {
     float i=0.0f;
     for(i=0.0f; i<1024.0f; i++) {
-        SIN1024[(int)i] = sin(3.14151591f * 2.0f * i/1024.0f);
+        float sini = sin(3.14151591f * 2.0f * i/1024.0f);
+        SIN1024[(int)i] = sini;
     }
 }
 void calcCOS() {
     float i=0.0f;
     for(i=0.0f; i<1024.0f; i++) {
-        COS1024[(int)i] = cos(3.14151591f * 2.0f * i/1024.0f);
+        float cosi = cos(3.14151591f * 2.0f * i/1024.0f);
+        COS1024[(int)i] = cosi;
     }
 }
 
 struct Vec {
-   double x, y, z;
+   long x, y, z;
 }; 
-struct Vec VecCreate( float x_, float y_, float z_) {
+struct Vec VecCreateF( float x_, float y_, float z_) {
+    struct Vec r_;
+    r_.x = FLOAT_TO_FIXED(x_);
+    r_.y = FLOAT_TO_FIXED(y_);
+    r_.z = FLOAT_TO_FIXED(z_);
+    return r_;
+};
+struct Vec VecCreateL( long x_, long y_, long z_) {
     struct Vec r_;
     r_.x = x_;
     r_.y = y_;
@@ -129,31 +140,31 @@ struct Vec VecCreate( float x_, float y_, float z_) {
     return r_;
 };
 struct Vec add( struct Vec A, struct Vec B) {
-    return VecCreate(A.x+B.x,A.y+B.y,A.z+B.z);
+    return VecCreateL(A.x+B.x,A.y+B.y,A.z+B.z);
 }
 struct Vec sub( struct Vec A, struct Vec B) {
-    return VecCreate(A.x-B.x,A.y-B.y,A.z-B.z);
+    return VecCreateL(A.x-B.x,A.y-B.y,A.z-B.z);
 }
 struct Vec mul( struct Vec A, struct Vec B) {
-    return VecCreate(A.x*B.x,A.y*B.y,A.z*B.z);
+    return VecCreateL(A.x*B.x,A.y*B.y,A.z*B.z);
 }
 struct Vec norm( struct Vec A) {
     float L = sqrt( A.x*A.x + A.y*A.y + A.z * A.z);
-    return VecCreate(A.x/L,A.y/L,A.z/L);
+    return VecCreateL(A.x/L,A.y/L,A.z/L);
 }
 float dot( struct Vec A, struct Vec B) {
     return A.x*B.x+A.y*B.y+A.z*B.z;
 }
 struct Vec cross( struct Vec A, struct Vec B) {
-    return VecCreate(A.y*B.z-A.z*B.y,A.z*B.x-A.x*B.z,A.x*B.y-A.y*B.x);
+    return VecCreateL(A.y*B.z-A.z*B.y,A.z*B.x-A.x*B.z,A.x*B.y-A.y*B.x);
 }
 struct Vec rot2D( struct Vec A, float rad ) {
-    float X, Y;
+    long X, Y;
     float sina = SIN1024[(int)(rad*1024.0f)&1023];
     float cosa = COS1024[(int)(rad*1024.0f)&1023];
     X = A.x * cosa - A.y * sina;
     Y = A.x * sina + A.y * cosa;
-    return VecCreate(X, Y, A.z);
+    return VecCreateL(X, Y, A.z);
 }
 
 

@@ -108,7 +108,9 @@ float passedTime;
 #include "src\loader\loader.h"
 #include "src\3d\horzline.h"
 #include "src\3d\raster.h"
+#include "src\3d\matrix.h"
 #include "src\3d\vector.h"
+
 
 #define FIXED_TO_FLOAT(x) ((float)x / 65536);
 #define FLOAT_TO_FIXED(f) (long)(f * 65536);
@@ -123,8 +125,8 @@ float passedTime;
 /*  Not super accurate but good enough*/
 #define FIXEDMUL(x, y) ((x/256)*(y/256))
 
-#define FIXEDDIV(x, y) (((long long)(x)<<16)/y)
-//#define FIXEDDIV(x, y) ((x*256)/(y*256))
+//#define FIXEDDIV(x, y) (((long long)(x)<<16)/y)
+#define FIXEDDIV(x, y) ((x<<6)/y)<<10 
 long FIXCEIL( long a) {
     long decimal, integer;
     decimal = a & 0x0000ffff;

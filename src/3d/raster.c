@@ -21,6 +21,11 @@ void swap( long *a, long *b) {
 void fillingFixed(long x1, long y1, long x2, long y2, long x3, long y3) {
     long invslope1, invslope2, curx1, curx2;
     long scanlineY;
+
+    if(y1<INT_TO_FIXED(0)) y1=INT_TO_FIXED(1);
+    if(y2<INT_TO_FIXED(0)) y2=INT_TO_FIXED(1);
+    if(y3<INT_TO_FIXED(0)) y3=INT_TO_FIXED(1);
+
     invslope1 = FIXEDDIV( (x2 - x1) , (y2 - y1) );
     invslope2 = FIXEDDIV( (x3 - x1) , (y3 - y1) );
 
@@ -31,11 +36,11 @@ void fillingFixed(long x1, long y1, long x2, long y2, long x3, long y3) {
     for ( scanlineY = FIXED_TO_INT(y1); scanlineY < FIXED_TO_INT(y2); scanlineY++) {
         int x0 = FIXED_TO_INT(curx1);
         int x1 = FIXED_TO_INT(curx2);
-        if(scanlineY>0 && scanlineY<200)
-            drawHorizontalLine( x0, x1, scanlineY, 33);
+        if(scanlineY>0 && scanlineY<200+128)
+            drawHorizontalLine( x0, x1, scanlineY-128, 33);
         curx1 += invslope1;
         curx2 += invslope2;
-        if(scanlineY>200)
+        if(scanlineY>200+128)
             break;
     }
 
@@ -50,11 +55,11 @@ void fillingFixed(long x1, long y1, long x2, long y2, long x3, long y3) {
     for ( scanlineY = scanlineY; scanlineY < FIXED_TO_INT(y3); scanlineY++) {
         int x0 = FIXED_TO_INT(curx1);
         int x1 = FIXED_TO_INT(curx2);
-        if(scanlineY>0 && scanlineY<200)
-            drawHorizontalLine( x0, x1, scanlineY, 77);
+        if(scanlineY>0 && scanlineY<200+128)
+            drawHorizontalLine( x0, x1, scanlineY-128, 77);
         curx1 += invslope1;
         curx2 += invslope2;
-        if(scanlineY>200)
+        if(scanlineY>200+128)
             break;
     }
 }
@@ -77,7 +82,7 @@ void polygonFillFixed(long x0, long y0, long x1, long y1, long x2, long y2) {
     y1 = FIXCEIL(y1);
     x2 = FIXCEIL(x2);
     y2 = FIXCEIL(y2);
-    fillingFixed(x0, y0, x1, y1, x2, y2);
+    fillingFixed(x0, y0+INT_TO_FIXED(128), x1, y1+INT_TO_FIXED(128), x2, y2+INT_TO_FIXED(128));
 }
 
 void polygon(long x0, long y0, long x1, long y1, long x2, long y2) {

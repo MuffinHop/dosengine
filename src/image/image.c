@@ -1,17 +1,17 @@
 #include "src\misc\definer.h"
 void displayImage(struct Image img) {
-	int i,j;
+	long i,j;
     int width = img.width;
+    dword *dwordImage=(dword *)img.pixelbuffer; 
+    dword *dwordBuffer=(dword *)&videobuffer;
     for(i=0;i<256;i++) {
         outp(0x03c8, (byte)i);
         outp(0x03c9, img.palettebuffer [i * 3 + 0]);
         outp(0x03c9, img.palettebuffer [i * 3 + 1]);
         outp(0x03c9, img.palettebuffer [i * 3 + 2]);
     }
-    for(j=0; j<200; j++) {
-        for(i=0; i<320; i++) {
-            videobuffer[i+j*320] = img.pixelbuffer[min(i,width)+j*width];
-        }
+    for(i=0; i<80*200; i++) {
+        dwordBuffer[i] = dwordImage[i];
     }
 }
 struct Image loadImage(const char* file) {

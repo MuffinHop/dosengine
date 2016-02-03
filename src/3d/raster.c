@@ -17,50 +17,51 @@ void swap( long *a, long *b) {
     *b ^= *a;
     *a ^= *b;
 }
-
 void fillingFixed(long x1, long y1, long x2, long y2, long x3, long y3) {
     long invslope1, invslope2, curx1, curx2;
     long scanlineY;
 
-    if(y1<INT_TO_FIXED(0)) y1=INT_TO_FIXED(1);
-    if(y2<INT_TO_FIXED(0)) y2=INT_TO_FIXED(1);
-    if(y3<INT_TO_FIXED(0)) y3=INT_TO_FIXED(1);
-
-    invslope1 = FIXEDDIV( (x2 - x1) , (y2 - y1) );
-    invslope2 = FIXEDDIV( (x3 - x1) , (y3 - y1) );
+    if(y1<0) y1 = 256;
+    if(y2<0) y2 = 256;
+    if(y3<0) y3 = 256;
 
     curx1 = x1;
     curx2 = x1;
     scanlineY = y1;
-    if(y1 != y2)
-    for ( scanlineY = FIXED_TO_INT(y1); scanlineY < FIXED_TO_INT(y2); scanlineY++) {
-        int x0 = FIXED_TO_INT(curx1);
-        int x1 = FIXED_TO_INT(curx2);
-        if(scanlineY>0 && scanlineY<200+128)
-            drawHorizontalLine( x0, x1, scanlineY-128, 33);
-        curx1 += invslope1;
-        curx2 += invslope2;
-        if(scanlineY>200+128)
-            break;
+
+    if(y1 != y2) {
+        invslope1 = FIXEDDIV( (x2 - x1) , (y2 - y1) );
+        invslope2 = FIXEDDIV( (x3 - x1) , (y3 - y1) );
+
+        for ( scanlineY = FIXED_TO_INT(y1); scanlineY < FIXED_TO_INT(y2); scanlineY++) {
+            int x0 = FIXED_TO_INT(curx1);
+            int x1 = FIXED_TO_INT(curx2);
+                pushHorizontalLine( x0, x1, scanlineY-128, 33);
+            curx1 += invslope1;
+            curx2 += invslope2;
+            if(scanlineY>200+128)
+                break;
+        }
     }
 
     if(y1 == y2) curx2 = x2;
-
-    invslope1 = FIXEDDIV( (x3 - curx1) , (y3 - INT_TO_FIXED ( scanlineY ) ) );
-    invslope2 = FIXEDDIV( (x3 - curx2) , (y3 - INT_TO_FIXED ( scanlineY ) ) );
-
     curx1 = curx1;
     curx2 = curx2;
-    if(y2 != y3)
-    for ( scanlineY = scanlineY; scanlineY < FIXED_TO_INT(y3); scanlineY++) {
-        int x0 = FIXED_TO_INT(curx1);
-        int x1 = FIXED_TO_INT(curx2);
-        if(scanlineY>0 && scanlineY<200+128)
-            drawHorizontalLine( x0, x1, scanlineY-128, 77);
-        curx1 += invslope1;
-        curx2 += invslope2;
-        if(scanlineY>200+128)
-            break;
+
+    if(y2 != y3) {
+        long fscnly=INT_TO_FIXED ( scanlineY );
+        invslope1 = FIXEDDIV( (x3 - curx1) , (y3 - fscnly ) );
+        invslope2 = FIXEDDIV( (x3 - curx2) , (y3 - fscnly ) );
+
+        for ( scanlineY = scanlineY; scanlineY < FIXED_TO_INT(y3); scanlineY++) {
+            int x0 = FIXED_TO_INT(curx1);
+            int x1 = FIXED_TO_INT(curx2);
+                pushHorizontalLine( x0, x1, scanlineY-128, 77);
+            curx1 += invslope1;
+            curx2 += invslope2;
+            if(scanlineY>200+128)
+                break;
+        }
     }
 }
 void polygonFillFixed(long x0, long y0, long x1, long y1, long x2, long y2) {

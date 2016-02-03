@@ -95,6 +95,7 @@ float passedTime;
 #include <stdio.h>
 #include <stdlib.h>
 #include <dos.h>
+#include <conio.h>
 #include <mem.h>
 #include <math.h>
 #include "src\player\magic.h"
@@ -110,12 +111,12 @@ float passedTime;
 #include "src\3d\raster.h"
 #include "src\3d\matrix.h"
 #include "src\3d\vector.h"
+#include "src\connection\connect.h"
 
-
-#define FIXED_TO_FLOAT(x) ((float)x / 65536);
+#define FIXED_TO_FLOAT(x) ((float)x >> 16);
 #define FLOAT_TO_FIXED(f) (long)(f * 65536);
-#define INT_TO_FIXED(x) (long)(x * 65536)
-#define FIXED_TO_INT(x) (int) ( (long)(x / 65536) & 0x0000ffff)
+#define INT_TO_FIXED(x) (long)(x << 16)
+#define FIXED_TO_INT(x) (int) ( (long)(x >> 16) & 0x0000ffff)
 
 /*  long long -> turns into 64-bit
     Any 32-bit CPU or even MMX will go ape shit over this
@@ -123,11 +124,11 @@ float passedTime;
 //#define FIXEDMUL(x, y) ((long long)(x)*(long long)(y)) / 65536
 
 /*  Not super accurate but good enough*/
-#define FIXEDMUL(x, y) ((x/256)*(y/256))
+#define FIXEDMUL(x, y) ((x>>8)*(y>>8))
 
 //#define FIXEDDIV(x, y) (((long long)(x)<<16)/y)
-#define FIXEDDIV(x, y) ((x<<6)/y)<<10 
-long FIXCEIL( long a) {
+#define FIXEDDIV(x, y) ((x<<5)/y)<<11 
+inline long FIXCEIL( long a) {
     long decimal, integer;
     decimal = a & 0x0000ffff;
     if(decimal != 0) {

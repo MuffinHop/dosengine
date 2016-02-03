@@ -17,21 +17,28 @@ float pyor=0.0f;
 void demo() {
     word e;
     float i;
-    word T = *my_clock;
-    pyor = (float)(T)/60.0f;
-    for(i=0.0; i<1.0f; i++){
-        struct Vec z =  VecCreateF( 160.0f+i*4, 100.0f, 0.0f);
-        struct Vec a = VecCreateF( 80.0f,-32.0f, 0.0f);
-        struct Vec b = VecCreateF(-80.0f,-80.0f, 0.0f);
-        struct Vec c = VecCreateF( i, 80.0f, 0.0f);
-        a = rot2D( a, pyor+i/11.0f );
-        b = rot2D( b, pyor+i/11.0f );
-        c = rot2D( c, pyor+i/11.0f );
-        a = add( a, z);
-        b = add( b, z);
-        c = add( c, z);
+    pyor = currentTime * 100;
+    for(i=6.0; i>1.0f; i--){
+        struct Vec a = VecCreateF( 110.0f,-122.0f, fmod(i+currentTime,12.0f)+1.2f);
+        struct Vec b = VecCreateF(-110.0f,-110.0f, fmod(i+currentTime,12.0f)+1.2f);
+        struct Vec c = VecCreateF( i, 110.0f, fmod(i,12.0f)+1.2f);
+        struct Vec z =  VecCreateF( 160.0f+sin(currentTime+i*3.141591f*2.0f/6.0f)*64.0f, 100.0f+cos(currentTime+i*3.141591f*2.0f/6.0f)*64.0f, 0.0f);
+        
+        rot2D( &a, pyor + i * 32 );
+        rot2D( &b, pyor + i * 32 );
+        rot2D( &c, pyor + i * 32 );
+        a.x = FIXEDDIV(a.x, a.z);
+        a.y = FIXEDDIV(a.y, a.z);
+        b.x = FIXEDDIV(b.x, b.z);
+        b.y = FIXEDDIV(b.y, a.z);
+        c.x = FIXEDDIV(c.x, a.z);
+        c.y = FIXEDDIV(c.y, a.z);
+        add( &a, &z);
+        add( &b, &z);
+        add( &c, &z);
         polygonFillFixed(a.x, a.y, b.x, b.y, c.x, c.y);
     }
+    drawHorizontalLines();
 }
 int main(int argc, char *argv[]) {
     union REGS regs;
@@ -44,13 +51,9 @@ int main(int argc, char *argv[]) {
     int req_comp = 0;
     int pixel_pos = 0;
 
+    char str1[] = "hello, synctracker!\n";
     byte *image_pixelbuffer = malloc(320 * 200);
     byte *image_palettebuffer = malloc(256 * 3);
-
-
-    
-    calcSIN();
-    calcCOS();
 
 
     /* Unbuffer stdout: */
@@ -64,6 +67,7 @@ int main(int argc, char *argv[]) {
 
     system("cls");
     printf("Please wait...");
+    connectToCOM1();
 
     loader();
 
@@ -78,7 +82,7 @@ int main(int argc, char *argv[]) {
 
     set_mode(VGA_256_COLOR_MODE);
     while ( !kbhit() ) {
-        currentTime = frameCount;
+        currentTime = frameCount / 60.0f;
         passedTime = frameCount - prevTime;
         prevTime = currentTime;
 
